@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -23,7 +25,24 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         super(Config.class);  // REQUIRED — this fixes the UnsupportedOperationException
     }
 
-    public static class Config {}
+    @Override
+    public List<String> shortcutFieldOrder() {
+        return Collections.singletonList("roles");
+    }
+
+    public static class Config {
+
+        private List<String> roles;
+
+        public List<String> getRoles() {
+            return roles;
+        }
+
+        public void setRoles(String roles) {
+            this.roles = Arrays.asList(roles.split(","));
+        }
+
+    }
 
     @Override
     public GatewayFilter apply(Config config) {
@@ -36,8 +55,12 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
             }
 
             String role = jwtUtil.extractRole(token);
+            System.out.println(role);
 
-            List<String> allowedRoles = (List<String>) exchange.getAttribute("roles");
+
+            List<String> allowedRoles = config.getRoles();
+            System.out.println("Allowed Roles: " + allowedRoles);
+
             if (allowedRoles != null && !allowedRoles.contains(role)) {
                 return forbidden(exchange);
             }

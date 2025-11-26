@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -32,7 +33,7 @@ public class AuthGatewayController {
                 .retrieve()
                 .bodyToMono(UserResponseDto.class)
                 .map(user -> {
-                    String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+                    String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toUpperCase(Locale.ROOT));
                     return Map.of("token", token);
                 });
     }
