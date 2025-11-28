@@ -56,7 +56,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
                 exchange.getResponse().getHeaders().add("Access-Control-Allow-Origin", "http://localhost:5173");
                 exchange.getResponse().getHeaders().add("Access-Control-Allow-Credentials", "true");
                 exchange.getResponse().getHeaders().add("Access-Control-Allow-Headers", "*");
-                exchange.getResponse().getHeaders().add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+                exchange.getResponse().getHeaders().add("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
 
                 return exchange.getResponse().setComplete();
             }

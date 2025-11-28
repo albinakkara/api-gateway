@@ -3,6 +3,7 @@ package com.telemedicine.api_gateway.controller;
 import com.telemedicine.api_gateway.dto.UserResponseDto;
 import com.telemedicine.api_gateway.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -16,7 +17,7 @@ import java.util.Map;
         origins = "http://localhost:5173",
         allowedHeaders = "*",
         allowCredentials = "true",
-        methods = {RequestMethod.POST, RequestMethod.OPTIONS}
+        methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS}
 )
 public class AuthGatewayController {
 
@@ -37,8 +38,9 @@ public class AuthGatewayController {
                 .bodyToMono(UserResponseDto.class)
                 .map(user -> {
                     String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toUpperCase(Locale.ROOT));
-                    return Map.of("token", token);
+                    return Map.of("token", token, "role", user.getRole());
                 });
     }
+
 }
 
