@@ -3,10 +3,7 @@ package com.telemedicine.api_gateway.controller;
 import com.telemedicine.api_gateway.dto.UserResponseDto;
 import com.telemedicine.api_gateway.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -15,6 +12,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(
+        origins = "http://localhost:5173",
+        allowedHeaders = "*",
+        allowCredentials = "true",
+        methods = {RequestMethod.POST, RequestMethod.OPTIONS}
+)
 public class AuthGatewayController {
 
     @Autowired

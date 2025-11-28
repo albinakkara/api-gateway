@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.cloud.gateway.filter.factory.GatewayFilterFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+@Order(-1)
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
 
     @Autowired
@@ -47,6 +49,23 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
+
+            if (exchange.getRequest().getMethod().name().equalsIgnoreCase("OPTIONS")) {
+
+                exchange.getResponse().setStatusCode(HttpStatus.OK);
+                exchange.getResponse().getHeaders().add("Access-Control-Allow-Origin", "http://localhost:5173");
+                exchange.getResponse().getHeaders().add("Access-Control-Allow-Credentials", "true");
+                exchange.getResponse().getHeaders().add("Access-Control-Allow-Headers", "*");
+                exchange.getResponse().getHeaders().add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+
+                return exchange.getResponse().setComplete();
+            }
+
+            String path = exchange.getRequest().getPath().toString();
+
+            if (path.startsWith("/auth/login") || path.startsWith("/auth/register")) {
+                return chain.filter(exchange); // no JWT required
+            }
 
             String token = extractToken(exchange.getRequest());
 
