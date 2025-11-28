@@ -65,7 +65,17 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
                 return forbidden(exchange);
             }
 
-            return chain.filter(exchange);
+            String email = jwtUtil.extractEmail(token);
+            System.out.println(email);
+
+
+            ServerHttpRequest mutatedReq = exchange.getRequest().mutate()
+                    .header("X-User-Email", email != null ? email : "")
+                    .header("X-User-Role", role != null ? role : "")
+                    .build();
+
+
+            return chain.filter(exchange.mutate().request(mutatedReq).build());
         };
     }
 
